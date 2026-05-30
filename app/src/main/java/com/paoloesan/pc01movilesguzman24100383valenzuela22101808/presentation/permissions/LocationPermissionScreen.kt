@@ -1,7 +1,11 @@
 package com.paoloesan.pc01movilesguzman24100383valenzuela22101808.presentation.permissions
 
 import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -28,13 +32,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationPermissionScreen(navController: NavController) {
-    var permissionStatus by remember { mutableStateOf("Permiso pendiente de solicitud") }
+    val context = LocalContext.current
+    var permissionStatus by remember { mutableStateOf("") }
+    var isPermanentlyDenied by remember { mutableStateOf(false) }
 
     val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -42,13 +52,20 @@ fun LocationPermissionScreen(navController: NavController) {
         Manifest.permission.ACCESS_COARSE_LOCATION
     }
 
+    val isAlreadyGranted = ContextCompat.checkSelfPermission(context, permission) ==
+            PackageManager.PERMISSION_GRANTED
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        permissionStatus = if (isGranted) {
-            "Permiso concedido"
+        if (isGranted) {
+            permissionStatus = "Permiso concedido"
+            isPermanentlyDenied = false
         } else {
-            "Permiso denegado"
+            permissionStatus = "Permiso denegado"
+            isPermanentlyDenied = !shouldShowRequestPermissionRationale(
+                context as android.app.Activity, permission
+            )
         }
     }
 
@@ -94,18 +111,46 @@ fun LocationPermissionScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = {
-                locationPermissionLauncher.launch(permission)
-            }) {
-                Text("Solicitar Permiso de Ubicación")
+            if (isAlreadyGranted) {
+                Text(
+                    text = "Permiso concedido",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else if (isPermanentlyDenied) {
+                Text(
+                    text = "El permiso fue denegado permanentemente. Debes habilitarlo desde Ajustes.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                }) {
+                    Text("Abrir Ajustes")
+                }
+            } else {
+                Button(onClick = {
+                    locationPermissionLauncher.launch(permission)
+                }) {
+                    Text("Solicitar Permiso de Ubicación")
+                }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = permissionStatus,
-                style = MaterialTheme.typography.titleMedium
-            )
+            if (permissionStatus.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = permissionStatus,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (permissionStatus == "Permiso concedido")
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }
