@@ -1,4 +1,6 @@
 package com.paoloesan.pc01movilesguzman24100383valenzuela22101808
+// Paolo Guzman - 24100383
+// Brandon Valenzuela - 22101808
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -27,3 +29,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
