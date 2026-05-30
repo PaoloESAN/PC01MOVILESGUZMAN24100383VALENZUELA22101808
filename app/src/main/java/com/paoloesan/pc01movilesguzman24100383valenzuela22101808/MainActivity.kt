@@ -4,7 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.paoloesan.pc01movilesguzman24100383valenzuela22101808.presentation.navigation.AppNavGraph
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
+import com.paoloesan.pc01movilesguzman24100383valenzuela22101808.presentation.destinations.DestinationsScreen
 import com.paoloesan.pc01movilesguzman24100383valenzuela22101808.ui.theme.PC01MOVILESGUZMAN24100383VALENZUELA22101808Theme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +17,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PC01MOVILESGUZMAN24100383VALENZUELA22101808Theme {
-                AppNavGraph()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    DestinationsScreen()
+                }
             }
         }
     }
