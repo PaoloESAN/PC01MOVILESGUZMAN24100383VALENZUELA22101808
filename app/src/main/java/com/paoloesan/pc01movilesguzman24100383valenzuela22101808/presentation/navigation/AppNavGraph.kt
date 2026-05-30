@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.paoloesan.pc01movilesguzman24100383valenzuela22101808.presentation.equipaje.EquipmentCalculatorScreen
 import com.paoloesan.pc01movilesguzman24100383valenzuela22101808.presentation.menu.MenuScreen
+import com.paoloesan.pc01movilesguzman24100383valenzuela22101808.presentation.presupuesto.TravelBudgetPlannerScreen
 
 @Composable
 fun AppNavGraph() {
@@ -32,7 +33,7 @@ fun AppNavGraph() {
     ) {
         composable("menu") { MenuScreen(navController) }
         composable("equipaje") { EquipmentCalculatorScreen(navController) }
-        composable("presupuesto") { StubScreen(navController, "Planificador de Presupuesto de Viaje") }
+        composable("presupuesto") { TravelBudgetPlannerScreen(navController) }
         composable("destinos") { StubScreen(navController, "Catálogo de Destinos Turísticos") }
         composable("ubicacion") { StubScreen(navController, "Permiso de Ubicación para Asistencia de Viaje") }
     }
